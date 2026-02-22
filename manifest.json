@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Jisuke",
+  "version": "1.0.0",
+  "description": "Adds rōmaji above Japanese text using ruby annotations.",
+  "permissions": [],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["style.css"],
+      "js": [
+        "lib/wanakana.min.js", 
+        "lib/kuromoji.js",
+        
+        "src/ruby.js",
+        "src/tokenizer.js",
+
+        "main.js",
+
+        "view/hover.js"
+      ],
+
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["dict/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

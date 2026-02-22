@@ -1,0 +1,7 @@
+ruby.jp-ruby { ruby-position: over; }
+ruby.jp-ruby .rb { display: ruby-base; }
+ruby.jp-ruby rt  { display: ruby-text; }
+
+rt {
+  font-size: 0.8em;
+}
