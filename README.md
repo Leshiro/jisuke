@@ -31,6 +31,18 @@ Jisuke only reads webpage text to generate rōmaji locally. No data is collected
 ## Contributions
 Contributions, reporting issues and feature requests are welcome. Feel free to submit an issue or open a pull request.
 
-## Built With
-- WanaKana: https://github.com/WaniKani/WanaKana
+## Credits
+This project would not be possible without the following open-source projects:
+
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
+    - Licensed under the Apache License 2.0.
+    - Used components:
+        - `dict/`
+        - `kuromoji.js`
+
+- WanaKana: https://github.com/WaniKani/WanaKana
+    - Licensed under the MIT License.
+    - Used component: `wanakana.min.js`
+
+## Built With
+- Node.js: https://nodejs.org
