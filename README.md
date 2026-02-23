@@ -1,5 +1,7 @@
 # Jisuke
 
+![logo](assets/icons/icon128.png)
+
 ![Node.js](https://img.shields.io/badge/Node.js-v25.5.0-yellow)
 ![WanaKana](https://img.shields.io/badge/WanaKana-5.3.1-red)
 ![Kuromoji.js](https://img.shields.io/badge/Kuromoji.js-0.1.2-blue)
@@ -53,5 +55,6 @@ This project would not be possible without the following open-source projects:
 - Node.js: https://nodejs.org
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
 - WanaKana: https://github.com/WaniKani/WanaKana
+
 
 
