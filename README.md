@@ -4,12 +4,14 @@
 ![WanaKana](https://img.shields.io/badge/WanaKana-5.3.1-red)
 ![Kuromoji.js](https://img.shields.io/badge/Kuromoji.js-0.1.2-blue)
 
-Jisuke is a lightweight browser extension that adds [rōmaji](https://en.wikipedia.org/wiki/Romanization_of_Japanese) above Japanese text, intended for beginner learners of the Japanese language.
+Jisuke is a lightweight browser extension that adds [rōmaji](https://en.wikipedia.org/wiki/Romanization_of_Japanese) above Japanese text using [Ruby](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/ruby) annotations.
+It provides reading support for users engaging with Japanese content online, whether for study or everyday browsing.
 
-## Information
-After installation, Jisuke will automatically add rōmaji on top of any Japanese text, so no activation is needed.
-
-Jisuke only reads webpage text to generate rōmaji locally. No data is collected or sent externally.
+### A few things to know:
+- After installation, Jisuke will automatically add rōmaji on top of any Japanese text, so no activation is needed.
+- Jisuke only processes Japanese text when it becomes visible on screen. This prevents large websites from causing unnecessary processing, keeping it lightweight.
+- Jisuke handles dynamic page changes, automatically processing new text as it appears on the screen.
+- Jisuke only reads webpage text to generate rōmaji locally. No data is collected or sent externally.
 
 **Note:** Some names or rare kanji may produce incorrect readings or may not display any rōmaji above.
 
@@ -46,3 +48,6 @@ This project would not be possible without the following open-source projects:
 
 ## Built With
 - Node.js: https://nodejs.org
+- Kuromoji.js: https://github.com/takuyaa/kuromoji.js
+- WanaKana: https://github.com/WaniKani/WanaKana
+
