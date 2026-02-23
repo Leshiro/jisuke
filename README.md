@@ -1,5 +1,7 @@
 # Jisuke
 
+![logo](assets/icons/icon128.png)
+
 ![Node.js](https://img.shields.io/badge/Node.js-v25.5.0-yellow)
 ![WanaKana](https://img.shields.io/badge/WanaKana-5.3.1-red)
 ![Kuromoji.js](https://img.shields.io/badge/Kuromoji.js-0.1.2-blue)
@@ -14,6 +16,9 @@ It provides reading support for users engaging with Japanese content online, whe
 - Jisuke only reads webpage text to generate rōmaji locally. No data is collected or sent externally.
 
 **Note:** Some names or rare kanji may produce incorrect readings or may not display any rōmaji above.
+
+## Preview
+![preview](assets/images/preview1.png)
 
 ## Setup
 1. Download the repository as ZIP.
@@ -50,4 +55,6 @@ This project would not be possible without the following open-source projects:
 - Node.js: https://nodejs.org
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
 - WanaKana: https://github.com/WaniKani/WanaKana
+
+
 
