@@ -9,6 +9,22 @@ function HasJP(element) {
   return !!t && JP_RE.test(t);
 }
 
+//clears done mark
+function ClearDone(startEl) {
+  let el = startEl;
+
+  while (el && el !== document.body && !el.hasAttribute(JP_RUBY_DONE)) {
+    el = el.parentElement;
+  }
+
+  if (el && el.hasAttribute(JP_RUBY_DONE)) {
+    el.removeAttribute(JP_RUBY_DONE);
+    return el; //return the element we unlocked
+  }
+
+  return startEl; //fallback
+}
+
 //observes candidate elements
 function initVO(tokenizer) {
 
@@ -63,31 +79,14 @@ function initVO(tokenizer) {
       //skips
       if (SKIP_TAGS.has(element.tagName)) continue;
       if (element.hasAttribute(JP_RUBY_DONE)) continue;
-      if (!HasJP(element)) continue;
 
       io.observe(element);
     }
   }
 
-  //scan the page once on init
-  Watch(document.body);
+  //initial full page scan
+  Watch(document.body)
   return { io, Watch };
-}
-
-//clears done mark
-function ClearDone(startEl) {
-  let el = startEl;
-
-  while (el && el !== document.body && !el.hasAttribute(JP_RUBY_DONE)) {
-    el = el.parentElement;
-  }
-
-  if (el && el.hasAttribute(JP_RUBY_DONE)) {
-    el.removeAttribute(JP_RUBY_DONE);
-    return el; //return the element we unlocked
-  }
-
-  return startEl; //fallback
 }
 
 
