@@ -2,9 +2,18 @@
   "manifest_version": 3,
   "name": "Jisuke",
   "version": "1.0.0",
-  "description": "Adds rōmaji above Japanese text using ruby annotations.",
+  "description": "Jisuke adds rōmaji above Japanese text using Ruby annotations.",
+
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+
   "permissions": [],
   "host_permissions": ["<all_urls>"],
+
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

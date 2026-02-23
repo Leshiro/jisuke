@@ -1,5 +1,5 @@
-const VISIBLE_TYPES =
-  "p, span, div, li, a, h1, h2, h3, h4, h5, h6, article, section"; //types to watch
+//constant
+const VISIBLE_TYPES = "p, span, div, li, a, h1, h2, h3, h4, h5, h6, article, section"; //types to watch
 const JP_RUBY_DONE = "data-jpruby-done"; //done marker
 
 //quick check if text has JP
@@ -14,7 +14,9 @@ function initVO(tokenizer) {
 
   //runs asynchronously when observed elements are visible
   const io = new IntersectionObserver(
+
     (entries) => {
+
       for (const e of entries) {
         if (!e.isIntersecting) continue; //ignore offscreen
 
@@ -67,12 +69,10 @@ function initVO(tokenizer) {
     }
   }
 
-  //first scan the page
+  //scan the page once on init
   Watch(document.body);
-
   return { io, Watch };
 }
-
 
 //clears done mark
 function ClearDone(startEl) {
@@ -96,10 +96,6 @@ function ClearDone(startEl) {
 (async () => {
   const tokenizer = await initTokenizer(); //setup tokenizer
   const VO = initVO(tokenizer); //setup visible observer
-
-  // 3) Watch DOM changes:
-  //    - childList: new nodes inserted/removed
-  //    - characterData: existing text node content changed
 
   //watch DOM changes
   const MO = new MutationObserver((mutations) => {
