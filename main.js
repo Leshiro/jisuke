@@ -1,70 +1,172 @@
-//constant
-const VISIBLE_TYPES = "p, span, div, li, a, h1, h2, h3, h4, h5, h6, article, section"; //types to scan
-const JP_RUBY_DONE = "data-jpruby-done"; //already done marker
+const VISIBLE_TYPES =
+  "p, span, div, li, a, h1, h2, h3, h4, h5, h6, article, section"; //types to watch
+const JP_RUBY_DONE = "data-jpruby-done"; //done marker
 
-//quick check if element has visible JP before scanning
+//quick check if text has JP
 function HasJP(element) {
   const t = element.textContent;
   JP_RE.lastIndex = 0;
   return !!t && JP_RE.test(t);
 }
 
-//observe visible elements and process them if inside viewport
-function ObserveVisibles(tokenizer) {
-  const io = new IntersectionObserver((entries) => { //init intersection observer
-    for (const e of entries) {
-      if (!e.isIntersecting) continue; //if not in viewport, skip
+//observes candidate elements
+function initVO(tokenizer) {
 
-      const element = e.target; //else get the element
-      io.unobserve(element); //stop watching
+  //runs asynchronously when observed elements are visible
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue; //ignore offscreen
 
-      if (element.hasAttribute(JP_RUBY_DONE)) continue; //if already done, skip
-      if (!HasJP(element)) continue; //if no JP, skip
+        const element = e.target;
+        io.unobserve(element); //stop watching this element
 
-      element.setAttribute(JP_RUBY_DONE, "1"); //mark done
-      enqueue(() => AddRubyToTextNodes(element, tokenizer));
+        //quick checks
+        if (element.hasAttribute(JP_RUBY_DONE)) continue;
+        if (!HasJP(element)) continue; 
+
+        enqueue(() => {
+          //final quick checks
+          if (element.hasAttribute(JP_RUBY_DONE)) return;
+          if (!HasJP(element)) return;
+
+          AddRubyToTextNodes(element, tokenizer); //process
+          element.setAttribute(JP_RUBY_DONE, "1"); //mark done
+        });
+      }
+    },
+    {
+      root: null,
+      threshold: 0,
+      rootMargin: "300px 0px", //treat slightly off-screen as visible
     }
-  }, { root: null, threshold: 0, rootMargin: "300px 0px" }); //treat slightly off-screen as visible
+  );
 
-  //save elements under a root for observer
+  //function that gets the elements
   function Watch(root) {
-    const elements = root.querySelectorAll ? root.querySelectorAll(VISIBLE_TYPES) : [];
-    for (const element of elements) {
-      if (SKIP_TAGS.has(element.tagName)) continue; //skip unwanted element types
-      if (element.hasAttribute(JP_RUBY_DONE)) continue; //if already done, skip
-      if (!HasJP(element)) continue; //if no JP, skip
+    const list = []; //passed to Watch()
+
+    //get root itself if it’s an element
+    if (root?.nodeType === Node.ELEMENT_NODE && root.matches?.(VISIBLE_TYPES)) {
+      list.push(root);
+    }
+
+    //get children of root
+    if (root?.querySelectorAll) {
+      list.push(...root.querySelectorAll(VISIBLE_TYPES));
+    }
+
+    //let io observe each element
+    for (const element of list) {
+      //skips
+      if (SKIP_TAGS.has(element.tagName)) continue;
+      if (element.hasAttribute(JP_RUBY_DONE)) continue;
+      if (!HasJP(element)) continue;
+
       io.observe(element);
     }
   }
 
-  //register current page
+  //first scan the page
   Watch(document.body);
 
   return { io, Watch };
 }
 
-// initial run
+
+//clears done mark
+function ClearDone(startEl) {
+  let el = startEl;
+
+  while (el && el !== document.body && !el.hasAttribute(JP_RUBY_DONE)) {
+    el = el.parentElement;
+  }
+
+  if (el && el.hasAttribute(JP_RUBY_DONE)) {
+    el.removeAttribute(JP_RUBY_DONE);
+    return el; //return the element we unlocked
+  }
+
+  return startEl; //fallback
+}
+
+
+//main bootstrap
+
 (async () => {
-  
-  //on page load
-  const tokenizer = await initTokenizer(); //init tokenizer
+  const tokenizer = await initTokenizer(); //setup tokenizer
+  const VO = initVO(tokenizer); //setup visible observer
 
-  const visibles = ObserveVisibles(tokenizer); //get visibles
+  // 3) Watch DOM changes:
+  //    - childList: new nodes inserted/removed
+  //    - characterData: existing text node content changed
 
-  //run if page changes
-  const mo = new MutationObserver((mutations) => { //init mutation observer
-    for (const mutation of mutations) { //changes
-      for (const added of mutation.addedNodes) { //new nodes
+  //watch DOM changes
+  const MO = new MutationObserver((mutations) => {
+    for (const m of mutations) {
 
-        if (added.nodeType === Node.ELEMENT_NODE) { //check if node is element
-          if (!SKIP_TAGS.has(added.tagName)) {
-            visibles.Watch(added); //add to observe list
-           }
+      //1. if existing text node changes
+      if (m.type === "characterData") {
+        const textNode = m.target; //get the text node
+        const parentEl = textNode?.parentElement; //get the parent
+
+        //skips
+        if (!parentEl) continue;
+        if (SKIP_TAGS.has(parentEl.tagName)) continue;
+
+        const unlocked = ClearDone(parentEl); //remove the done marker
+
+        //if contains JP, watch
+        if (HasJP(unlocked)) {
+          VO.Watch(unlocked);
+        }
+
+        continue;
+      }
+
+      // 2. if new nodes are inserted
+      if (m.type === "childList") {
+        for (const added of m.addedNodes) {
+
+          //if new node is text node
+          if (added.nodeType === Node.TEXT_NODE) {
+            const textNode = added;
+            const parentEl = textNode.parentElement;
+            if (!parentEl || SKIP_TAGS.has(parentEl.tagName)) continue;
+
+            const unlocked = ClearDone(parentEl); //unlock done if marked done
+
+            if (HasJP(unlocked))
+              VO.Watch(unlocked);
+
+            continue;
+          }
+
+          //3. if a new element is inserted, watch children
+          if (added.nodeType === Node.ELEMENT_NODE) {
+            const el = added;
+
+            if (SKIP_TAGS.has(el.tagName)) continue;
+            VO.Watch(el);
+
+            continue;
+          }
+
+          //4. if a document fragment is inserted
+          if (added.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+            VO.Watch(added);
+            continue;
+          }
         }
       }
     }
   });
 
-  //observe changes
-  mo.observe(document.documentElement, { childList: true, subtree: true });
+  //run mutation observer
+  MO.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+
+  });
 })();
