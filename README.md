@@ -15,6 +15,9 @@ It provides reading support for users engaging with Japanese content online, whe
 
 **Note:** Some names or rare kanji may produce incorrect readings or may not display any rōmaji above.
 
+## Preview
+![preview](assets/images/preview1.png)
+
 ## Setup
 1. Download the repository as ZIP.
 
@@ -50,4 +53,5 @@ This project would not be possible without the following open-source projects:
 - Node.js: https://nodejs.org
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
 - WanaKana: https://github.com/WaniKani/WanaKana
+
 
