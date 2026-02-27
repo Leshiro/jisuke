@@ -21,6 +21,12 @@ It provides reading support for users engaging with Japanese content online, whe
 ![preview](assets/images/preview1.png)
 
 ## Setup
+
+### Chrome Web Store
+If your browser is Google Chrome, you may add Jisuke to Chrome from the following link:
+https://chromewebstore.google.com/detail/jisuke/aleojdjeopiaadfljlafcdmjkdflihbe
+
+### Local Setup
 1. Download the repository as ZIP.
 
 2. Extract the folder from ZIP.
@@ -55,6 +61,7 @@ This project would not be possible without the following open-source projects:
 - Node.js: https://nodejs.org
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
 - WanaKana: https://github.com/WaniKani/WanaKana
+
 
 
 
