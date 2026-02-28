@@ -28,6 +28,8 @@ Jisuke is only available for [Chromium-based browsers](https://en.wikipedia.org/
 If you use a Chromium-based browser, you may add Jisuke to Chrome from the following link:
 https://chromewebstore.google.com/detail/jisuke/aleojdjeopiaadfljlafcdmjkdflihbe
 
+**Note:** Chrome Web Store uploads take a while to be reviewed, so the latest version of Jisuke may not always be available on the store.
+
 ### Local Setup
 1. Download the repository as ZIP.
 
@@ -63,6 +65,7 @@ This project would not be possible without the following open-source projects:
 - Node.js: https://nodejs.org
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
 - WanaKana: https://github.com/WaniKani/WanaKana
+
 
 
 
