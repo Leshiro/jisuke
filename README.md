@@ -31,7 +31,7 @@ https://chromewebstore.google.com/detail/jisuke/aleojdjeopiaadfljlafcdmjkdflihbe
 
 2. Extract the folder from ZIP.
 
-3. Load the extension in a Chromium-based browser:
+3. Load the extension in a [Chromium-based browser](https://en.wikipedia.org/wiki/Chromium_(web_browser)):
     - Open the extensions page:
         - Chrome: `chrome://extensions`
         - Edge: `edge://extensions`
@@ -61,6 +61,7 @@ This project would not be possible without the following open-source projects:
 - Node.js: https://nodejs.org
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
 - WanaKana: https://github.com/WaniKani/WanaKana
+
 
 
 
