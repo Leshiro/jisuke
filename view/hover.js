@@ -150,6 +150,7 @@
     return true;
   }
 
+  //show if hovering
   document.addEventListener("mouseover", (e) => {
     const ruby = e.target.closest("ruby.jp-ruby");
     if (!ruby) return;
@@ -171,9 +172,19 @@
     }, DELAY_MS);
   });
 
+  //hide when not hovering
   document.addEventListener("mouseout", (e) => {
     if (!e.target.closest("ruby.jp-ruby")) return;
 
+    clearTimeout(timer);
+    activeRuby = null;
+
+    pop.classList.remove("show");
+    pop.style.display = "none";
+  });
+
+    //hide on mouse click
+  document.addEventListener("click", () => {
     clearTimeout(timer);
     activeRuby = null;
 
