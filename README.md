@@ -18,7 +18,8 @@ It provides reading support for users engaging with Japanese content online, whe
 **Note:** Some names or rare kanji may produce incorrect readings or may not display any rōmaji above.
 
 ## Preview
-![preview](assets/images/preview1.png)
+Source: [Cowboy Bebop Wikipedia page (Japanese)](https://ja.wikipedia.org/wiki/%E3%82%AB%E3%82%A6%E3%83%9C%E3%83%BC%E3%82%A4%E3%83%93%E3%83%90%E3%83%83%E3%83%97)
+![preview](assets/preview/main.png)
 
 ## Setup
 Jisuke is only available for [Chromium-based browsers](https://en.wikipedia.org/wiki/Chromium_(web_browser)) (e.g. Google Chrome, Microsoft Edge).
@@ -62,6 +63,7 @@ This project would not be possible without the following open-source projects:
 - Node.js: https://nodejs.org
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
 - WanaKana: https://github.com/WaniKani/WanaKana
+
 
 
 
