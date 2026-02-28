@@ -119,6 +119,25 @@
   let timer = null;
   let activeRuby = null;
 
+  function hidePop(){
+    clearTimeout(timer);
+    activeRuby = null;
+    pop.classList.remove("show");
+    pop.style.display = "none";
+  }
+
+  //hide popup if ruby is removed
+  const observer = new MutationObserver(() => {
+    if (!activeRuby) return;
+
+    //if the ruby node is gone, hide
+    if (!activeRuby.isConnected) {
+      hidePop();
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
   function placeSmart(ruby){
     const r = ruby.getBoundingClientRect();
 
@@ -164,6 +183,8 @@
       const rb = ruby.querySelector(".rb")?.textContent?.trim() ?? "";
       const rt = ruby.querySelector("rt")?.textContent?.trim() ?? "";
 
+      if (!rb && !rt) return;
+
       rbEl.textContent = rb;
       rtEl.textContent = rt;
       rtEl.style.display = rt ? "block" : "none";
@@ -183,7 +204,7 @@
     pop.style.display = "none";
   });
 
-    //hide on mouse click
+  //hide on mouse click
   document.addEventListener("click", () => {
     clearTimeout(timer);
     activeRuby = null;
