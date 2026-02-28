@@ -1,4 +1,4 @@
-//process newly added text in chunks
+//process newly added text chunk
 let chunk = [];
 let chunkTimer = null;
 
@@ -11,7 +11,7 @@ function addToChunk(el) {
   }
 
   clearTimeout(chunkTimer);
-  chunkTimer = setTimeout(processChunk, 10); //process all changes as soon as changes stop
+  chunkTimer = setTimeout(processChunk, 500); //process all changes as soon as changes stop
 }
 
 function processChunk() {
