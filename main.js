@@ -232,9 +232,5 @@ let VO; //needed for scoping
   });
 
   //run mutation observer
-  MO.observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-  });
+  MO.observe(document.documentElement, {childList: true, subtree: true, characterData: true});
 })();
