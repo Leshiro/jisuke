@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Jisuke",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Jisuke adds rōmaji above Japanese text using Ruby annotations.",
 
   "icons": {
