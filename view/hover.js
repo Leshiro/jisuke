@@ -31,13 +31,11 @@
     ruby.jp-ruby:hover .rb {
       background: #ff0000 !important;
       color: #ffffff !important;
-      font-weight: 700;
     }
 
     ruby.jp-ruby:hover rt {
       background: #ff0000 !important;
       color: #ffffff !important;
-      font-weight: 700;
     }
   `;
 

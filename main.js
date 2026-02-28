@@ -45,6 +45,7 @@ function initVO(tokenizer) {
         const el = e.target;
         io.unobserve(el); //stop watching this element
         clearObserved(el);
+        observedCount = Math.max(0, observedCount - 1);
 
         //quick checks
         if (el.hasAttribute(JP_RUBY_DONE)) continue;
@@ -84,8 +85,8 @@ function initVO(tokenizer) {
           //only observe if contains JP
           if (HasJP(el)) {
 
-            markObserved(el);
             io.observe(el);
+            markObserved(el);
             observedCount++;
           }
         }
@@ -108,8 +109,8 @@ function initVO(tokenizer) {
       //only observe if contains JP
       if (!HasJP(el)) continue;
 
-      markObserved(el);
       io.observe(el);
+      markObserved(el);
       observedCount++;
     }
   }
@@ -151,8 +152,8 @@ function ProgressiveWatch(root, io) {
       //skip if no JP
       if (!HasJP(el)) continue;
 
-      markObserved(el);
       io.observe(el);
+      markObserved(el);
       observedCount++;
 
       if (observedCount >= MAX_OBSERVED) return;
