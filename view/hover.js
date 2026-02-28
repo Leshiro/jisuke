@@ -1,3 +1,4 @@
+//on hover style
 (function RubyHoverStyle() {
   const STYLE_ID = "jp-ruby-hover-style";
   if (document.getElementById(STYLE_ID)) return;
@@ -37,12 +38,6 @@
       background: #ff0000 !important;
       color: #ffffff !important;
       font-weight: 700 !important;
-    }
-
-    ruby.jp-ruby .rb::selection,
-    ruby.jp-ruby rt::selection {
-      background: #ff0000;
-      color: #ffffff;
     }
   `;
 

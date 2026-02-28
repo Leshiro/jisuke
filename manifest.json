@@ -26,7 +26,8 @@
 
         "main.js",
 
-        "view/hover.js"
+        "view/hover.js",
+        "view/cleaner.js"
       ],
 
       "run_at": "document_idle"

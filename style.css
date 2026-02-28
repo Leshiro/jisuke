@@ -2,6 +2,13 @@ ruby.jp-ruby { ruby-position: over; }
 ruby.jp-ruby .rb { display: ruby-base; }
 ruby.jp-ruby rt  { display: ruby-text; }
 
+ruby.jp-ruby rt,
+ruby.jp-ruby rp {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
 rt {
   font-size: 0.8em;
 }
