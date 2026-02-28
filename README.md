@@ -27,7 +27,7 @@ Source: [Cowboy Bebop Wikipedia page (Japanese)](https://ja.wikipedia.org/wiki/%
 Jisuke is only available for [Chromium-based browsers](https://en.wikipedia.org/wiki/Chromium_(web_browser)) (e.g. Google Chrome, Microsoft Edge).
 
 ### Chrome Web Store
-If you use a Chromium-based browser, you may add Jisuke to Chrome from the following link:
+If you use a Chromium-based browser, you may add Jisuke to your browser from the following link:
 https://chromewebstore.google.com/detail/jisuke/aleojdjeopiaadfljlafcdmjkdflihbe
 
 **Note:** Chrome Web Store uploads take a few days to be reviewed, so the latest version of Jisuke may not always be available on the store.
