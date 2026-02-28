@@ -1,4 +1,4 @@
-//constant
+// --- CONSTANTS ---
 const JP_RUBY_DONE = "data-jpruby-done"; //done marker
 
 const VISIBLE_TYPES = "p, span, div, li, a, h1, h2, h3, h4, h5, h6, article, section"; //types to watch
@@ -6,9 +6,16 @@ const VISIBLE_TAGS = new Set(["P","SPAN","DIV","LI","A","H1","H2","H3","H4","H5"
 
 const MAX_OBSERVED = 3000; //hard cap
 
+// --- HELPERS ---
+
 //track elements already observed to prevent duplicate observing
-const observed = new WeakSet();
 let observedCount = 0;
+const observed = new WeakMap(); //if element, return true
+
+//functions for handling the map
+function isObserved(el) { return observed.get(el) === true; }
+function markObserved(el) { observed.set(el, true); }
+function clearObserved(el) { observed.delete(el); }
 
 //create idle worker if supported
 const IdleWorker = window.requestIdleCallback || ((cb) =>
@@ -22,63 +29,21 @@ function HasJP(element) {
   return !!t && JP_RE.test(t);
 }
 
-//clears done mark
+//clear done mark
 function ClearDone(startEl) {
   let el = startEl;
-
   while (el && el !== document.body && !el.hasAttribute(JP_RUBY_DONE)) {
     el = el.parentElement;
   }
-
   if (el && el.hasAttribute(JP_RUBY_DONE)) {
     el.removeAttribute(JP_RUBY_DONE);
+    clearObserved(el);
     return el; //return the unlocked element
   }
-
   return startEl; //fallback
 }
 
-//scan the page progressively
-function ProgressiveWatch(root, io) {
-  if (!root) return;
-
-  //walk the page slowly instead of all at once on massive pages
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT,
-    {
-      acceptNode(node) {
-        if (SKIP_TAGS.has(node.tagName)) return NodeFilter.FILTER_REJECT; //skip forbidden tags
-        if (!VISIBLE_TAGS.has(node.tagName)) return NodeFilter.FILTER_SKIP; //only accept necessary tag types
-
-        //skip already done & already observed
-        if (node.hasAttribute(JP_RUBY_DONE)) return NodeFilter.FILTER_REJECT;
-        if (observed.has(node)) return NodeFilter.FILTER_REJECT;
-
-        return NodeFilter.FILTER_ACCEPT;
-      },
-    }
-  );
-
-  //run in idle slices
-  function work(deadline) {
-    if (observedCount >= MAX_OBSERVED) return;
-
-    while (deadline.timeRemaining() > 2) {
-      const el = walker.nextNode();
-      if (!el) return; //finished
-
-      //skip if no JP
-      if (!HasJP(el)) continue;
-
-      observed.add(el);
-      io.observe(el);
-      observedCount++;
-
-      if (observedCount >= MAX_OBSERVED) return;
-    }
-    IdleWorker(work); //continue
-  }
-  IdleWorker(work); //initial
-}
+// --- MAIN FUNCTIONS ---
 
 //observes candidate elements
 function initVO(tokenizer) {
@@ -91,20 +56,21 @@ function initVO(tokenizer) {
       for (const e of entries) {
         if (!e.isIntersecting) continue; //ignore offscreen
 
-        const element = e.target;
-        io.unobserve(element); //stop watching this element
+        const el = e.target;
+        io.unobserve(el); //stop watching this element
+        clearObserved(el);
 
         //quick checks
-        if (element.hasAttribute(JP_RUBY_DONE)) continue;
-        if (!HasJP(element)) continue;
+        if (el.hasAttribute(JP_RUBY_DONE)) continue;
+        if (!HasJP(el)) continue;
 
         enqueue(() => {
           //final quick checks
-          if (element.hasAttribute(JP_RUBY_DONE)) return;
-          if (!HasJP(element)) return;
+          if (el.hasAttribute(JP_RUBY_DONE)) return;
+          if (!HasJP(el)) return;
 
-          AddRubyToTextNodes(element, tokenizer); //process
-          element.setAttribute(JP_RUBY_DONE, "1"); //mark done
+          AddRubyToTextNodes(el, tokenizer); //process
+          el.setAttribute(JP_RUBY_DONE, "1"); //mark done
         });
       }
     },
@@ -127,10 +93,11 @@ function initVO(tokenizer) {
       if (!SKIP_TAGS.has(el.tagName) && !el.hasAttribute(JP_RUBY_DONE)) {
 
         //observe root if it matches visible types
-        if (VISIBLE_TAGS.has(el.tagName) && !observed.has(el) && observedCount < MAX_OBSERVED) {
+        if (VISIBLE_TAGS.has(el.tagName) && !isObserved(el) && observedCount < MAX_OBSERVED) {
+  
           //only observe if contains JP
           if (HasJP(el)) {
-            observed.add(el);
+            markObserved(el);
             io.observe(el);
             observedCount++;
           }
@@ -144,18 +111,18 @@ function initVO(tokenizer) {
     }
 
     //let io observe each element
-    for (const element of list) {
+    for (const el of list) {
       //skips
       if (observedCount >= MAX_OBSERVED) break;
-      if (SKIP_TAGS.has(element.tagName)) continue;
-      if (element.hasAttribute(JP_RUBY_DONE)) continue;
-      if (observed.has(element)) continue;
+      if (SKIP_TAGS.has(el.tagName)) continue;
+      if (el.hasAttribute(JP_RUBY_DONE)) continue;
+      if (isObserved(el)) continue;
 
       //only observe if contains JP
-      if (!HasJP(element)) continue;
+      if (!HasJP(el)) continue;
 
-      observed.add(element);
-      io.observe(element);
+      markObserved(el);
+      io.observe(el);
       observedCount++;
     }
   }
@@ -164,6 +131,48 @@ function initVO(tokenizer) {
   ProgressiveWatch(document.body, io);
 
   return { io, Watch };
+}
+
+//scan the page progressively
+function ProgressiveWatch(root, io) {
+  if (!root) return;
+
+  //walk the page slowly instead of all at once on massive pages
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT,
+    {
+      acceptNode(node) {
+        if (SKIP_TAGS.has(node.tagName)) return NodeFilter.FILTER_REJECT; //skip forbidden tags
+        if (!VISIBLE_TAGS.has(node.tagName)) return NodeFilter.FILTER_SKIP; //only accept necessary tag types
+
+        //skip already done & already observed
+        if (node.hasAttribute(JP_RUBY_DONE)) return NodeFilter.FILTER_REJECT;
+        if (isObserved(node)) return NodeFilter.FILTER_REJECT;
+
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    }
+  );
+
+  //run in idle slices
+  function work(deadline) {
+    if (observedCount >= MAX_OBSERVED) return;
+
+    while (deadline.timeRemaining() > 2) {
+      const el = walker.nextNode();
+      if (!el) return; //finished
+
+      //skip if no JP
+      if (!HasJP(el)) continue;
+
+      markObserved(el);
+      io.observe(el);
+      observedCount++;
+
+      if (observedCount >= MAX_OBSERVED) return;
+    }
+    IdleWorker(work); //continue
+  }
+  IdleWorker(work); //initial
 }
 
 // --- MAIN BOOTSTRAP ---
