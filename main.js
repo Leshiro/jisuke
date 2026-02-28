@@ -1,6 +1,19 @@
 //constant
-const VISIBLE_TYPES = "p, span, div, li, a, h1, h2, h3, h4, h5, h6, article, section"; //types to watch
 const JP_RUBY_DONE = "data-jpruby-done"; //done marker
+
+const VISIBLE_TYPES = "p, span, div, li, a, h1, h2, h3, h4, h5, h6, article, section"; //types to watch
+const VISIBLE_TAGS = new Set(["P","SPAN","DIV","LI","A","H1","H2","H3","H4","H5","H6","ARTICLE","SECTION"]); //types as a set
+
+const MAX_OBSERVED = 3000; //hard cap
+
+//track elements already observed to prevent duplicate observing
+const observed = new WeakSet();
+let observedCount = 0;
+
+//create idle worker if supported
+const IdleWorker = window.requestIdleCallback || ((cb) =>
+  setTimeout(() => cb({ timeRemaining: () => 8 }), 1)
+);
 
 //quick check if text has JP
 function HasJP(element) {
@@ -19,10 +32,52 @@ function ClearDone(startEl) {
 
   if (el && el.hasAttribute(JP_RUBY_DONE)) {
     el.removeAttribute(JP_RUBY_DONE);
-    return el; //return the element we unlocked
+    return el; //return the unlocked element
   }
 
   return startEl; //fallback
+}
+
+//scan the page progressively
+function ProgressiveWatch(root, io) {
+  if (!root) return;
+
+  //walk the page slowly instead of all at once on massive pages
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT,
+    {
+      acceptNode(node) {
+        if (SKIP_TAGS.has(node.tagName)) return NodeFilter.FILTER_REJECT; //skip forbidden tags
+        if (!VISIBLE_TAGS.has(node.tagName)) return NodeFilter.FILTER_SKIP; //only accept necessary tag types
+
+        //skip already done & already observed
+        if (node.hasAttribute(JP_RUBY_DONE)) return NodeFilter.FILTER_REJECT;
+        if (observed.has(node)) return NodeFilter.FILTER_REJECT;
+
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    }
+  );
+
+  //run in idle slices
+  function work(deadline) {
+    if (observedCount >= MAX_OBSERVED) return;
+
+    while (deadline.timeRemaining() > 2) {
+      const el = walker.nextNode();
+      if (!el) return; //finished
+
+      //skip if no JP
+      if (!HasJP(el)) continue;
+
+      observed.add(el);
+      io.observe(el);
+      observedCount++;
+
+      if (observedCount >= MAX_OBSERVED) return;
+    }
+    IdleWorker(work); //continue
+  }
+  IdleWorker(work); //initial
 }
 
 //observes candidate elements
@@ -41,7 +96,7 @@ function initVO(tokenizer) {
 
         //quick checks
         if (element.hasAttribute(JP_RUBY_DONE)) continue;
-        if (!HasJP(element)) continue; 
+        if (!HasJP(element)) continue;
 
         enqueue(() => {
           //final quick checks
@@ -65,11 +120,25 @@ function initVO(tokenizer) {
     const list = []; //passed to Watch()
 
     //get root itself if it’s an element
-    if (root?.nodeType === Node.ELEMENT_NODE && root.matches?.(VISIBLE_TYPES)) {
-      list.push(root);
+    if (root?.nodeType === Node.ELEMENT_NODE) {
+      const el = root;
+
+      //skips
+      if (!SKIP_TAGS.has(el.tagName) && !el.hasAttribute(JP_RUBY_DONE)) {
+
+        //observe root if it matches visible types
+        if (VISIBLE_TAGS.has(el.tagName) && !observed.has(el) && observedCount < MAX_OBSERVED) {
+          //only observe if contains JP
+          if (HasJP(el)) {
+            observed.add(el);
+            io.observe(el);
+            observedCount++;
+          }
+        }
+      }
     }
 
-    //get children of root
+    //get children of root (only for small subtrees from mutations)
     if (root?.querySelectorAll) {
       list.push(...root.querySelectorAll(VISIBLE_TYPES));
     }
@@ -77,20 +146,27 @@ function initVO(tokenizer) {
     //let io observe each element
     for (const element of list) {
       //skips
+      if (observedCount >= MAX_OBSERVED) break;
       if (SKIP_TAGS.has(element.tagName)) continue;
       if (element.hasAttribute(JP_RUBY_DONE)) continue;
+      if (observed.has(element)) continue;
 
+      //only observe if contains JP
+      if (!HasJP(element)) continue;
+
+      observed.add(element);
       io.observe(element);
+      observedCount++;
     }
   }
 
   //initial full page scan
-  Watch(document.body)
+  ProgressiveWatch(document.body, io);
+
   return { io, Watch };
 }
 
-
-//main bootstrap
+// --- MAIN BOOTSTRAP ---
 
 (async () => {
   const tokenizer = await initTokenizer(); //setup tokenizer
@@ -162,6 +238,5 @@ function initVO(tokenizer) {
     childList: true,
     subtree: true,
     characterData: true,
-
   });
 })();

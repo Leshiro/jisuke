@@ -6,7 +6,6 @@ ruby.jp-ruby rt,
 ruby.jp-ruby rp {
   -webkit-user-select: none !important;
   user-select: none !important;
-  pointer-events: none !important;
 }
 
 rt {

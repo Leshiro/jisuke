@@ -37,7 +37,7 @@ function makeRuby(baseText, rtText) {
 function buildRubyFrag(text, tokenizer) {
   const frag = document.createDocumentFragment(); //hidden html container
 
-  // if kana only, use wanakana only
+  //if kana only, use wanakana only
   if (!KANJI_RE.test(text) && KANA_RE.test(text)) {
     frag.appendChild(makeRuby(text, wanakana.toRomaji(text)));
     return frag;
@@ -49,7 +49,7 @@ function buildRubyFrag(text, tokenizer) {
   for (const t of tokens) {
     const surface = t.surface_form;
 
-    // if token is kana only, use wanakana
+    //if token is kana only, use wanakana
     if (!KANJI_RE.test(surface) && KANA_RE.test(surface)) {
       frag.appendChild(makeRuby(surface, wanakana.toRomaji(surface)));
       continue;
