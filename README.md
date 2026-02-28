@@ -1,5 +1,7 @@
 # Jisuke
 
+**字助（じすけ）**
+
 ![logo](assets/icons/icon128.png)
 
 ![Node.js](https://img.shields.io/badge/Node.js-v25.5.0-yellow)
@@ -65,6 +67,7 @@ This project would not be possible without the following open-source projects:
 - Node.js: https://nodejs.org
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
 - WanaKana: https://github.com/WaniKani/WanaKana
+
 
 
 
