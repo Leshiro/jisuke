@@ -1,12 +1,10 @@
-// --- CONSTANTS ---
+//constants
 const JP_RUBY_DONE = "data-jpruby-done"; //done marker
 
 const VISIBLE_TYPES = "p, span, div, li, a, h1, h2, h3, h4, h5, h6, article, section"; //types to watch
 const VISIBLE_TAGS = new Set(["P","SPAN","DIV","LI","A","H1","H2","H3","H4","H5","H6","ARTICLE","SECTION"]); //types as a set
 
 const MAX_OBSERVED = 3000; //hard cap
-
-// --- HELPERS ---
 
 //track elements already observed to prevent duplicate observing
 let observedCount = 0;
@@ -16,18 +14,6 @@ const observed = new WeakMap(); //if element, return true
 function isObserved(el) { return observed.get(el) === true; }
 function markObserved(el) { observed.set(el, true); }
 function clearObserved(el) { observed.delete(el); }
-
-//create idle worker if supported
-const IdleWorker = window.requestIdleCallback || ((cb) =>
-  setTimeout(() => cb({ timeRemaining: () => 8 }), 1)
-);
-
-//quick check if text has JP
-function HasJP(element) {
-  const t = element.textContent;
-  JP_RE.lastIndex = 0;
-  return !!t && JP_RE.test(t);
-}
 
 //clear done mark
 function ClearDone(startEl) {
@@ -97,6 +83,7 @@ function initVO(tokenizer) {
   
           //only observe if contains JP
           if (HasJP(el)) {
+
             markObserved(el);
             io.observe(el);
             observedCount++;
@@ -177,9 +164,17 @@ function ProgressiveWatch(root, io) {
 
 // --- MAIN BOOTSTRAP ---
 
+//create idle worker if supported
+const IdleWorker = window.requestIdleCallback || ((cb) =>
+  setTimeout(() => cb({ timeRemaining: () => 8 }), 1)
+);
+
+let VO; //needed for scoping
+
+//flow
 (async () => {
   const tokenizer = await initTokenizer(); //setup tokenizer
-  const VO = initVO(tokenizer); //setup visible observer
+  VO = initVO(tokenizer); //setup visible observer
 
   //watch DOM changes
   const MO = new MutationObserver((mutations) => {
@@ -197,10 +192,7 @@ function ProgressiveWatch(root, io) {
         const unlocked = ClearDone(parentEl); //remove the done marker
 
         //if contains JP, watch
-        if (HasJP(unlocked)) {
-          VO.Watch(unlocked);
-        }
-
+        if (HasJP(unlocked)) addToChunk(unlocked);
         continue;
       }
 
@@ -216,9 +208,7 @@ function ProgressiveWatch(root, io) {
 
             const unlocked = ClearDone(parentEl); //unlock done if marked done
 
-            if (HasJP(unlocked))
-              VO.Watch(unlocked);
-
+            if (HasJP(unlocked)) addToChunk(unlocked);
             continue;
           }
 
@@ -227,14 +217,13 @@ function ProgressiveWatch(root, io) {
             const el = added;
 
             if (SKIP_TAGS.has(el.tagName)) continue;
-            VO.Watch(el);
-
+            addToChunk(el);
             continue;
           }
 
           //4. if a document fragment is inserted
           if (added.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-            VO.Watch(added);
+            addToChunk(added);
             continue;
           }
         }

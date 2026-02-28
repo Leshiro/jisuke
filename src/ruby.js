@@ -16,6 +16,13 @@ function CheckSkip(node) {
   return false;
 }
 
+//quick check if text has JP
+function HasJP(element) {
+  const t = element.textContent;
+  JP_RE.lastIndex = 0;
+  return !!t && JP_RE.test(t);
+}
+
 //make text to ruby
 function makeRuby(baseText, rtText) {
   const ruby = document.createElement("ruby");

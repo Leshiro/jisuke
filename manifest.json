@@ -23,6 +23,7 @@
         
         "src/ruby.js",
         "src/tokenizer.js",
+        "src/chunk.js",
 
         "main.js",
 
