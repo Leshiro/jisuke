@@ -21,9 +21,10 @@ It provides reading support for users engaging with Japanese content online, whe
 ![preview](assets/images/preview1.png)
 
 ## Setup
+Jisuke is only available for [Chromium-based browsers](https://en.wikipedia.org/wiki/Chromium_(web_browser)) (e.g. Google Chrome, Microsoft Edge).
 
 ### Chrome Web Store
-If your browser is Google Chrome, you may add Jisuke to Chrome from the following link:
+If you use a Chromium-based browser, you may add Jisuke to Chrome from the following link:
 https://chromewebstore.google.com/detail/jisuke/aleojdjeopiaadfljlafcdmjkdflihbe
 
 ### Local Setup
@@ -31,10 +32,10 @@ https://chromewebstore.google.com/detail/jisuke/aleojdjeopiaadfljlafcdmjkdflihbe
 
 2. Extract the folder from ZIP.
 
-3. Load the extension in a [Chromium-based browser](https://en.wikipedia.org/wiki/Chromium_(web_browser)):
+3. Load the extension in a Chromium-based browser:
     - Open the extensions page:
-        - Chrome: `chrome://extensions`
-        - Edge: `edge://extensions`
+        - for Google Chrome: `chrome://extensions`
+        - for Microsoft Edge: `edge://extensions`
     - Enable Developer Mode.
     - Click on `Load unpacked`.
     - Select the extracted folder.
@@ -61,6 +62,7 @@ This project would not be possible without the following open-source projects:
 - Node.js: https://nodejs.org
 - Kuromoji.js: https://github.com/takuyaa/kuromoji.js
 - WanaKana: https://github.com/WaniKani/WanaKana
+
 
 
 
