@@ -1,7 +1,7 @@
 //char ranges
-const JP_RE    = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u30FC]+/g;
-const KANA_RE  = /[\u3040-\u309F\u30A0-\u30FF\u30FC]+/;
-const KANJI_RE = /[\u4E00-\u9FFF]/;
+const JP_RE =/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー々]+/gu;
+const HAN_RE  = /\p{Script=Han}/u;
+const KANA_RE = /[\p{Script=Hiragana}\p{Script=Katakana}ー]/u;
 
 //skip tags
 const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA", "INPUT", "SELECT", "OPTION", "CODE", "PRE"]);
@@ -45,7 +45,7 @@ function buildRubyFrag(text, tokenizer) {
   const frag = document.createDocumentFragment(); //hidden html container
 
   //if kana only, use wanakana only
-  if (!KANJI_RE.test(text) && KANA_RE.test(text)) {
+  if (!HAN_RE.test(text) && KANA_RE.test(text)) {
     frag.appendChild(makeRuby(text, wanakana.toRomaji(text)));
     return frag;
   }
@@ -57,14 +57,14 @@ function buildRubyFrag(text, tokenizer) {
     const surface = t.surface_form;
 
     //if token is kana only, use wanakana
-    if (!KANJI_RE.test(surface) && KANA_RE.test(surface)) {
+    if (!HAN_RE.test(surface) && KANA_RE.test(surface)) {
       frag.appendChild(makeRuby(surface, wanakana.toRomaji(surface)));
       continue;
     }
 
     //check if JP chunk has kana reading
     const readingKana = t.reading;
-    const hasReading = !!readingKana && /[ァ-ヶー]/.test(readingKana);
+    const hasReading = !!readingKana;
 
     //if no reading, add plain text
     if (!hasReading) {
